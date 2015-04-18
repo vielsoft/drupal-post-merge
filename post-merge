@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# @file
+# Execute the deployment steps after running git pull or git merge.
+#
+# It is also possible to use site alias.
+
+#
+# Configure variables.
+#
+# The root directory of Drupal.
+DOCROOT=""
+
+# Clear all cache.
+drush cc all -r $DOCROOT
+# Run update.php.
+drush -y updb -r $DOCROOT
+# Check if features exist and is enabled.
+drush pml --status=enabled -y | grep features >& /dev/null
+if [ $? == 0 ]; then
+  # Revert all features.
+  drush -y fra -r $DOCROOT
+fi
+# Clear the cache again.
+drush cc all -r $DOCROOT
